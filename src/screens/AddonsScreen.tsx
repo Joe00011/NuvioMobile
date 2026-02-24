@@ -761,28 +761,14 @@ const handleConfigureAddon = (addon: ExtendedManifest, transportUrl?: string) =>
     logger.info(`Using addon.url property: ${configUrl}`);
   }
 
-  // 4. com.stremio.*.addon
-  else if (addon.id && addon.id.match(/^com\.stremio\.(.*?)\.addon$/)) {
-    const match = addon.id.match(/^com\.stremio\.(.*?)\.addon$/);
-    if (match && match[1]) {
-      const addonName = match[1];
-      if (addonName === 'torrentio') {
-        configUrl = 'https://torrentio.strem.fun/configure';
-      } else {
-        configUrl = `https://${addonName}.strem.fun/configure`;
-      }
-      logger.info(`Constructed URL from addon name: ${configUrl}`);
-    }
-  }
-
-  // 5. addon.id is a URL
+ 
   else if (addon.id && addon.id.startsWith('http')) {
     const baseUrl = addon.id.replace(/\/[^\/]+\.json$/, '/');
     configUrl = `${ensureSlash(baseUrl)}configure`;
     logger.info(`Using addon.id as HTTP URL: ${configUrl}`);
   }
 
-  // 6. stremio:// containing http/https
+  // 5. stremio:// containing http/https
   else if (addon.id && (addon.id.includes('https://') || addon.id.includes('http://'))) {
     const match = addon.id.match(/(https?:\/\/[^\/]+)(\/[^\s]*)?/);
     if (match) {
@@ -793,7 +779,7 @@ const handleConfigureAddon = (addon: ExtendedManifest, transportUrl?: string) =>
     }
   }
 
-  // 7. stremio://domain.com
+  // 6. stremio://domain.com
   if (!configUrl && addon.id && addon.id.startsWith('stremio://')) {
     const match = addon.id.match(/stremio:\/\/([^\/]+)(\/[^\s]*)?/);
     if (match) {
@@ -804,21 +790,21 @@ const handleConfigureAddon = (addon: ExtendedManifest, transportUrl?: string) =>
     }
   }
 
-  // 8. addon.transport
+  // 7. addon.transport
   if (!configUrl && addon.transport && addon.transport.includes('http')) {
     const baseUrl = addon.transport.replace(/\/[^\/]+\.json$/, '/');
     configUrl = `${ensureSlash(baseUrl)}configure`;
     logger.info(`Using addon.transport for config URL: ${configUrl}`);
   }
 
-  // 9. originalUrl
+  // 8. originalUrl
   if (!configUrl && (addon as any).originalUrl) {
     const baseUrl = (addon as any).originalUrl.replace(/\/[^\/]+\.json$/, '/');
     configUrl = `${ensureSlash(baseUrl)}configure`;
     logger.info(`Using originalUrl property: ${configUrl}`);
   }
 
-  // 10. Failure
+  // 9. Failure
   if (!configUrl) {
     logger.error(`Failed to determine config URL for addon: ${addon.name}, ID: ${addon.id}`);
     setAlertTitle(t('addons.config_unavailable_title'));
