@@ -112,7 +112,7 @@ const exoMimeToCodec = (mimeType?: string): string | null => {
     return null;
 };
 
-const buildExoAudioTrackName = (t: any, i: number): string => {
+export const buildExoAudioTrackName = (t: any, i: number): string => {
     const parts: string[] = [];
     let rawTitle: string = t.title ?? '';
     let channelCount: number | null = null;
@@ -142,7 +142,7 @@ const buildExoAudioTrackName = (t: any, i: number): string => {
     return parts.length > 0 ? parts.join(' ') : `Track ${i + 1}`;
 };
 
-const buildExoSubtitleTrackName = (t: any, i: number): string => {
+export const buildExoSubtitleTrackName = (t: any, i: number): string => {
     const parts: string[] = [];
     const titleLower = (t.title ?? '').toLowerCase();
     if (t.title && t.title.trim()) {
