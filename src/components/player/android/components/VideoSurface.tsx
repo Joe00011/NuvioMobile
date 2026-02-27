@@ -116,24 +116,26 @@ const exoMimeToCodec = (mimeType?: string): string | null => {
 export const buildExoAudioTrackName = (t: any, i: number): string => {
     const parts: string[] = [];
 
-    // Check both title and name fields for the |ch: encoding from Java
+    // Check both title and name fields for encoded metadata from Java
     let rawTitle: string = t.title ?? t.name ?? '';
     let channelCount: number | null = null;
     let encodedBitrate: number | null = null;
+    let encodedMimeType: string | null = null;
 
+    // Extract |ch:N, |br:N, |mt:mime from title
     const chMatch = rawTitle.match(/\|ch:(\d+)/);
-    if (chMatch) {
-        channelCount = parseInt(chMatch[1], 10);
-        rawTitle = rawTitle.replace(/\|ch:\d+/, '').trim();
-    }
+    if (chMatch) channelCount = parseInt(chMatch[1], 10);
+
     const brMatch = rawTitle.match(/\|br:(\d+)/);
-    if (brMatch) {
-        encodedBitrate = parseInt(brMatch[1], 10);
-        rawTitle = rawTitle.replace(/\|br:\d+/, '').trim();
-    }
+    if (brMatch) encodedBitrate = parseInt(brMatch[1], 10);
+
+    const mtMatch = rawTitle.match(/\|mt:([^|]+)/);
+    if (mtMatch) encodedMimeType = mtMatch[1];
+
+    // Strip all encoded metadata from the display title
+    rawTitle = rawTitle.replace(/\|ch:\d+/g, '').replace(/\|br:\d+/g, '').replace(/\|mt:[^|]+/g, '').trim();
 
     if (rawTitle) {
-        // Prepend language if available and not already in the title
         if (t.language) {
             const lang = EXOPLAYER_LANG_MAP[t.language.toLowerCase()] ?? t.language.toUpperCase();
             if (!rawTitle.toLowerCase().includes(lang.toLowerCase())) {
@@ -145,18 +147,19 @@ export const buildExoAudioTrackName = (t: any, i: number): string => {
         parts.push(EXOPLAYER_LANG_MAP[t.language.toLowerCase()] ?? t.language.toUpperCase());
     }
 
-    const codec = exoMimeToCodec(t.mimeType);
+    // Use mimeType from track object, fall back to encoded mimeType from title
+    const mimeType = t.mimeType ?? encodedMimeType ?? null;
+    const codec = exoMimeToCodec(mimeType);
     if (codec) parts.push(codec);
 
     // Use parsed channel count, fall back to bitrate-based guess for AC3/EAC3
     let ch = channelCount ?? t.channelCount ?? null;
-    if (ch == null && t.bitrate != null && t.bitrate > 0) {
-        const mime = (t.mimeType ?? '').toLowerCase();
+    if (ch == null) {
+        const mime = (mimeType ?? '').toLowerCase();
+        const br = encodedBitrate ?? t.bitrate ?? 0;
         if (mime.includes('ac3') || mime.includes('eac3') || mime.includes('ec-3')) {
-            // AC3: 640kbps = 5.1, 192-256kbps = 2.0
-            // EAC3: 768kbps+ = 5.1, 192-256kbps = 2.0
-            if (t.bitrate >= 500000) ch = 6;
-            else if (t.bitrate <= 320000) ch = 2;
+            if (br >= 500000) ch = 6;
+            else if (br > 0 && br <= 320000) ch = 2;
         }
     }
 
@@ -169,7 +172,6 @@ export const buildExoAudioTrackName = (t: any, i: number): string => {
         else parts.push(`${ch}ch`);
     }
 
-    // Use encoded bitrate first, fall back to t.bitrate / t.bitRate field
     const bitrate = encodedBitrate ?? t.bitrate ?? t.bitRate ?? null;
     if (bitrate != null && bitrate > 0) {
         parts.push(`${Math.round(bitrate / 1000)} kbps`);
@@ -177,6 +179,7 @@ export const buildExoAudioTrackName = (t: any, i: number): string => {
 
     return parts.length > 0 ? parts.join(' ') : `Track ${i + 1}`;
 };
+
 
 export const buildExoSubtitleTrackName = (t: any, i: number): string => {
     const parts: string[] = [];
