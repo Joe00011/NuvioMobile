@@ -102,7 +102,8 @@ const exoMimeToCodec = (mimeType?: string): string | null => {
     if (mime.includes('eac3') || mime.includes('ec-3')) return 'EAC3';
     if (mime.includes('ac3') || mime.includes('ac-3')) return 'AC3';
     if (mime.includes('truehd')) return 'TrueHD';
-    if (mime.includes('dts-hd') || mime.includes('dtshd')) return 'DTS-HD';
+    if (mime.includes('dts.hd') || mime.includes('dts-hd') || mime.includes('dtshd')) return 'DTS-HD';
+    if (mime.includes('dts.uhd') || mime.includes('dts:x')) return 'DTS:X';
     if (mime.includes('dts')) return 'DTS';
     if (mime.includes('aac')) return 'AAC';
     if (mime.includes('opus')) return 'Opus';
