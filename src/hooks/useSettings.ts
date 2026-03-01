@@ -35,7 +35,7 @@ export interface AppSettings {
   enableBackgroundPlayback: boolean;
   cacheLimit: number;
   useExternalPlayer: boolean;
-  preferredPlayer: 'internal' | 'vlc' | 'infuse' | 'outplayer' | 'vidhub' | 'infuse_livecontainer' | 'external';
+  preferredPlayer: 'internal' | 'vlc' | 'infuse' | 'outplayer' | 'vidhub' | 'infuse_livecontainer' | 'iina' | 'external';
   showHeroSection: boolean;
   showThisWeekSection: boolean; // Toggle "This Week" section
   featuredContentSource: 'tmdb' | 'catalogs';
