@@ -498,6 +498,12 @@ export const useStreamsScreen = () => {
               case 'vidhub':
                 externalPlayerUrls = [`vidhub://play?url=${streamUrl}`, `vidhub://${streamUrl}`];
                 break;
+              case 'iina':
+                externalPlayerUrls = [
+                  `iina://weblink?url=${streamUrl}`,
+                  `iina://weblink?url=${stream.url}`,
+                ];
+                break;
               default:
                 navigateToPlayer(stream);
                 return;
