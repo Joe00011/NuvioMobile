@@ -1250,6 +1250,8 @@
         "vidhub_desc": "VidHubプレーヤーでストリームを開く",
         "infuse_live_title": "Infuse LiveContainer",
         "infuse_live_desc": "Infuse LiveContainerでストリームを開く",
+        "iina_title": "IINA",
+        "iina_desc": "IINAプレーヤーでストリームを開く",
         "external_title": "外部プレーヤー",
         "external_desc": "好みのビデオプレーヤーでストリームを開く",
         "section_playback": "再生オプション",
