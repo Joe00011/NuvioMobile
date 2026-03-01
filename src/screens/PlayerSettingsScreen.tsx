@@ -147,6 +147,12 @@ const PlayerSettingsScreen: React.FC = () => {
         description: t('player.infuse_live_desc'),
         icon: 'smart-display',
       },
+      {
+        id: 'iina',
+        title: t('player.iina_title'),
+        description: t('player.iina_desc'),
+        icon: 'play-circle-outline',
+      },
     ] : [
       {
         id: 'external',
